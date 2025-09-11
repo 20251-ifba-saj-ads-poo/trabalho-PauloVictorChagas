@@ -1,31 +1,26 @@
 package br.edu.ifba.saj.fwads.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.Query;
+import br.edu.ifba.saj.fwads.model.AbstractEntity;
+import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Session;
-
-import br.edu.ifba.saj.fwads.model.AbstractEntity;
-
 public class Repository<T extends AbstractEntity> {
 
-    private static final EntityManagerFactory sessionFactory;
+    private static final EntityManagerFactory emf;
 
     static {
         try {
-            sessionFactory = Persistence.createEntityManagerFactory("jpa");
+            emf = Persistence.createEntityManagerFactory("jpa");
+            runImport(); 
         } catch (Throwable ex) {
-            throw new ExceptionInInitializerError(ex);
+            throw new ExceptionInInitializerError("Erro ao inicializar EntityManagerFactory: " + ex);
         }
     }
 
@@ -33,90 +28,106 @@ public class Repository<T extends AbstractEntity> {
 
     public Repository(Class<T> entityClass) {
         this.entityClass = entityClass;
-        runImport();
     }
 
-    //executa o import.sql nos casos do hibernate update
-    private void runImport() {
-        try {
-            EntityManager entityManager = sessionFactory.createEntityManager();
-            entityManager.getTransaction().begin();
+    private static void runImport() {
+        Path importFile = Paths.get("src/main/resources/import.sql");
 
-            String sql = new String(Files.readAllBytes(Paths.get("src/main/resources/import.sql")),
-                    StandardCharsets.UTF_8);
+        if (!Files.exists(importFile)) {
+            return; 
+        }
 
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+
+            String sql = Files.readString(importFile, StandardCharsets.UTF_8);
             for (String command : sql.split(";")) {
-                if (!command.trim().isEmpty()) {
-                    entityManager.createNativeQuery(command.trim()).executeUpdate();
+                String trimmed = command.trim();
+                if (!trimmed.isEmpty()) {
+                    em.createNativeQuery(trimmed).executeUpdate();
                 }
             }
 
-            entityManager.getTransaction().commit();
-            entityManager.close();
-        } catch (Throwable ex) {
-            throw new ExceptionInInitializerError(ex);
+            em.getTransaction().commit();
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao ler import.sql", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao executar import.sql", e);
         }
-
     }
 
     public T create(T entity) {
-        EntityManager entityManager = sessionFactory.createEntityManager();
-        entityManager.getTransaction().begin();
-        entityManager.persist(entity);
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        return entity;
+        return executeInsideTransaction(em -> {
+            em.persist(entity);
+            return entity;
+        });
     }
 
-    public T read(T entity) {
-        EntityManager entityManager = sessionFactory.createEntityManager();
-        return entityManager.find(entityClass, entity.getId());
+    public T read(Object id) {
+        try (EntityManager em = emf.createEntityManager()) {
+            return em.find(entityClass, id);
+        }
     }
 
     public List<T> findAll() {
-        EntityManager entityManager = sessionFactory.createEntityManager();
-        return entityManager.createQuery("Select t from " + entityClass.getSimpleName() + " t").getResultList();
+        try (EntityManager em = emf.createEntityManager()) {
+            String jpql = "SELECT t FROM " + entityClass.getSimpleName() + " t";
+            return em.createQuery(jpql, entityClass).getResultList();
+        }
     }
 
-    public List<T> findByMap(Map<String, Object> map) {
-        EntityManager entityManager = sessionFactory.createEntityManager();
-        StringBuilder query = new StringBuilder("Select t from " + entityClass.getSimpleName() + " t where 1=1 ");
-        if (!map.keySet().isEmpty()) {
-            map.forEach((k, v) -> {
-                query.append(" AND t." + k + " = :" + k);
-            });
+    public List<T> findByMap(Map<String, Object> params) {
+        try (EntityManager em = emf.createEntityManager()) {
+            StringBuilder jpql = new StringBuilder("SELECT t FROM " + entityClass.getSimpleName() + " t WHERE 1=1");
+
+            params.forEach((k, v) -> jpql.append(" AND t.").append(k).append(" = :").append(k));
+
+            TypedQuery<T> query = em.createQuery(jpql.toString(), entityClass);
+            params.forEach(query::setParameter);
+
+            return query.getResultList();
         }
-        Query q = entityManager.createQuery(query.toString());
-        if (!map.keySet().isEmpty()) {
-            map.forEach((k, v) -> {
-                q.setParameter(k, v);
-            });
-        }
-        return q.getResultList();
     }
 
     public T update(T entity) {
-        EntityManager entityManager = sessionFactory.createEntityManager();
-        entityManager.getTransaction().begin();
-        entityManager.merge(entity);
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        return entity;
+        return executeInsideTransaction(em -> em.merge(entity));
     }
 
     public void delete(T entity) {
-        EntityManager entityManager = sessionFactory.createEntityManager();
-        entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
-        entityManager.getTransaction().commit();
-        entityManager.close();
+        executeInsideTransaction(em -> {
+            T managed = em.contains(entity) ? entity : em.merge(entity);
+            em.remove(managed);
+            return null;
+        });
     }
 
     public Long count() {
-        EntityManager entityManager = sessionFactory.createEntityManager();
-        CriteriaBuilder qb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
-        cq.select(qb.count(cq.from(entityClass)));
-        return entityManager.createQuery(cq).getSingleResult();
+        try (EntityManager em = emf.createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+            cq.select(cb.count(cq.from(entityClass)));
+            return em.createQuery(cq).getSingleResult();
+        }
+    }
+
+    private <R> R executeInsideTransaction(EntityOperation<T, R> operation) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            R result = operation.apply(em);
+            tx.commit();
+            return result;
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    @FunctionalInterface
+    private interface EntityOperation<T, R> {
+        R apply(EntityManager em);
     }
 }

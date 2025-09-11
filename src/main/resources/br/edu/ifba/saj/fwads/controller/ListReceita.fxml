@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="394.0" prefWidth="582.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifba.saj.fwads.controller.ListReceitaController">
+   <center>
+      <TableView fx:id="tblReceita" prefHeight="347.0" prefWidth="489.0">
+        <columns>
+          <TableColumn fx:id="columnDescricaoReceita" editable="false" minWidth="-1.0" prefWidth="201.0" text="Decrição" />
+          <TableColumn fx:id="columnValorReceita" editable="false" minWidth="-1.0" prefWidth="172.0" text="Valor" />
+            <TableColumn fx:id="columnDataReceita" editable="false" minWidth="-1.0" prefWidth="208.0" text="Data" />
+        </columns>
+      </TableView>
+   </center>
+   <bottom>
+      <ButtonBar prefHeight="40.0" prefWidth="200.0" styleClass="main" stylesheets="@assets/style.css" BorderPane.alignment="CENTER">
+        <buttons>
+          <Button mnemonicParsing="false" onAction="#showNovoReceita" styleClass="bottom" stylesheets="@assets/style.css" text="Novo Receita" />
+        </buttons>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </ButtonBar>
+   </bottom>
+</BorderPane>

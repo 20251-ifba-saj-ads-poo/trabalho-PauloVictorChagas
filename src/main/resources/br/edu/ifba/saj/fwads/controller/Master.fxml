@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="masterPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="main" stylesheets="@assets/style.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifba.saj.fwads.controller.MasterController">
+<BorderPane fx:id="masterPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="main" stylesheets="@assets/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifba.saj.fwads.controller.MasterController">
    <top>
       <AnchorPane prefHeight="100.0" styleClass="top" stylesheets="@assets/style.css" BorderPane.alignment="CENTER">
          <children>
@@ -49,7 +49,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="menuItemCadAutor" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCadAutor" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Cadastro Autores" textFill="WHITE">
+            <Button fx:id="menuItemCadGasto" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCadGasto" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Cadastro Gasto" textFill="WHITE">
                <padding>
                   <Insets bottom="5.0" left="10.0" />
                </padding>
@@ -59,12 +59,12 @@
                <graphic>
                   <ImageView fitHeight="150.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@assets/reading-book.png" />
+                        <Image url="@assets/Gasto.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="menuItemCadLivro" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCadLivro" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Cadastro Livros" textFill="WHITE">
+            <Button fx:id="menuItemCadReceita" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCadReceita" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Cadastro Receita" textFill="WHITE">
                <padding>
                   <Insets bottom="5.0" left="10.0" />
                </padding>
@@ -74,12 +74,12 @@
                <graphic>
                   <ImageView fitHeight="35.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@assets/study.png" />
+                        <Image url="@assets/receita.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="menuItemListAutor" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showListAutor" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Listar Autores" textFill="WHITE">
+            <Button fx:id="menuItemListGasto" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showListGasto" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Listar Gastos" textFill="WHITE">
                <padding>
                   <Insets bottom="5.0" left="10.0" />
                </padding>
@@ -89,12 +89,12 @@
                <graphic>
                   <ImageView fitHeight="150.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@assets/reading-book.png" />
+                        <Image url="@assets/lista.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="menuItemListLivro" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showListLivro" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Listar Livros" textFill="WHITE">
+            <Button fx:id="menuItemListReceita" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showListLivro" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Listar Receitas" textFill="WHITE">
                <padding>
                   <Insets bottom="5.0" left="10.0" />
                </padding>
@@ -104,7 +104,7 @@
                <graphic>
                   <ImageView fitHeight="35.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@assets/study.png" />
+                        <Image url="@assets/lista.png" />
                      </image>
                   </ImageView>
                </graphic>

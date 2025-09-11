@@ -20,25 +20,25 @@ import javafx.scene.shape.Circle;
 public class MasterController {
 
     @FXML
-    private Button menuItemCadAutor;
+    private BorderPane masterPane;
 
     @FXML
-    private Button menuItemCadLivro;
+    private VBox menu;
+
+    @FXML
+    private Button menuItemCadGasto;
+
+    @FXML
+    private Button menuItemCadReceita;
 
     @FXML
     private Button menuItemHome;
 
     @FXML
-    private Button menuItemListAutor;
+    private Button menuItemListGasto;
 
     @FXML
-    private Button menuItemListLivro;
-
-    @FXML
-    private BorderPane masterPane;
-
-    @FXML
-    private VBox menu;
+    private Button menuItemListReceita;
 
     @FXML
     private Label userEmail;
@@ -55,7 +55,7 @@ public class MasterController {
 
     @FXML
     void logOff(MouseEvent event) {
-        Alert alert = new Alert(AlertType.CONFIRMATION, "Deseja realmente sair??", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(AlertType.CONFIRMATION, "Deseja realmente sair?", ButtonType.YES, ButtonType.NO);
         alert.showAndWait()
                 .filter(response -> response == ButtonType.YES)
                 .ifPresent(response -> {
@@ -67,13 +67,30 @@ public class MasterController {
     void showHome(ActionEvent event) {
         limparBotoes(event.getSource());
         masterPane.setCenter(new Pane());
-
     }
 
     @FXML
-    void showUsuarios(ActionEvent event) {
+    void showCadGasto(ActionEvent event) {
         limparBotoes(event.getSource());
-        masterPane.setCenter(new Pane());
+        showFXMLFile("CadGasto.fxml");
+    }
+
+    @FXML
+    void showCadReceita(ActionEvent event) {
+        limparBotoes(event.getSource());
+        showFXMLFile("CadReceita.fxml");
+    }
+
+    @FXML
+    void showListGasto(ActionEvent event) {
+        limparBotoes(event.getSource());
+        showFXMLFile("ListGasto.fxml");
+    }
+
+    @FXML
+    void showListReceita(ActionEvent event) {
+        limparBotoes(event.getSource());
+        showFXMLFile("ListReceita.fxml");
     }
 
     private void limparBotoes(Object source) {
@@ -81,37 +98,10 @@ public class MasterController {
             if (node instanceof Button btn) {
                 node.pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), false);
             }
-        }
-
-        );
+        });
         if (source instanceof Button btn) {
             btn.pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), true);
         }
-    }
-
-    @FXML
-    void showCadAutor(ActionEvent event) {
-        limparBotoes(event.getSource());
-        CadAutorController controller = (CadAutorController) showFXMLFile("CadAutor.fxml");
-        controller.setMasterController(this);
-    }
-
-    @FXML
-    void showListAutor(ActionEvent event) {
-        limparBotoes(event.getSource());
-        showFXMLFile("ListAutor.fxml");
-    }
-
-    @FXML
-    void showListLivro(ActionEvent event) {
-        limparBotoes(event.getSource());
-        showFXMLFile("ListLivro.fxml");
-    }
-
-    @FXML
-    void showCadLivro(ActionEvent event) {
-        limparBotoes(event.getSource());
-        showFXMLFile("CadLivro.fxml");
     }
 
     public Object showFXMLFile(String resourceName) {
@@ -120,7 +110,6 @@ public class MasterController {
             Pane fxmlCarregado = loader.load();
             masterPane.setCenter(fxmlCarregado);
             return loader.getController();
-
         } catch (Exception e) {
             new Alert(AlertType.ERROR, "Erro ao carregar o arquivo " + resourceName).showAndWait();
             e.printStackTrace();
