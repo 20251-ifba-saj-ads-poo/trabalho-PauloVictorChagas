@@ -4,6 +4,9 @@
     // Para obter mais informações, acesse: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        
+
+        
         {
             "type": "java",
             "name": "Launch Current File",
@@ -15,7 +18,8 @@
             "name": "Launch App",
             "request": "launch",
             "mainClass": "br.edu.ifba.saj.fwads/br.edu.ifba.saj.fwads.App",
-            "projectName": "fx-template"
+            "projectName": "fx-template",
+            "vmArgs": "--module-path \"C:/javafx-sdk-21/lib\" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base"
         }
     ]
 }

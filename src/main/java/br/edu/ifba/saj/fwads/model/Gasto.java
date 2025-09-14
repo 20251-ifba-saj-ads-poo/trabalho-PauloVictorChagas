@@ -48,6 +48,10 @@ public class Gasto extends AbstractEntity {
 
     public UUID getUsuarioId() { return usuarioId; }
     public void setUsuarioId(UUID usuarioId) { this.usuarioId = usuarioId; }
+    
+    public String getTipoFormatado() {
+        return isGastoFixo() ? "Fixo" : "Normal";
+    }
 
     @Override
     public String toString() {

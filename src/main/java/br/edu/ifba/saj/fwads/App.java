@@ -10,16 +10,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
-/**
- * JavaFX App
- */
+
 public class App extends Application {
 
     private static Scene scene;
     private static FXMLLoader loader;
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(@SuppressWarnings("exports") Stage stage) throws IOException {
         loader = new FXMLLoader(App.class.getResource("controller/Login.fxml"));
         scene = new Scene(loader.load(), 800, 600);
         stage.setScene(scene);
@@ -34,6 +32,7 @@ public class App extends Application {
         scene.setRoot(loadFXML(fxml));
     }
 
+    @SuppressWarnings("exports")
     public static Parent loadFXML(String fxml) {
         try {
             loader = new FXMLLoader(App.class.getResource(fxml));

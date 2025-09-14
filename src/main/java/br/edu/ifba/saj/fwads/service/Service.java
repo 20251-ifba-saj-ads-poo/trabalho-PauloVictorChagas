@@ -6,11 +6,16 @@ import br.edu.ifba.saj.fwads.repository.Repository;
 import java.util.List;
 import java.util.Map;
 
-public class Service<T extends AbstractEntity> {
+public class Service<T extends AbstractEntity> {  
 
     private Repository<T> repository;
 
     private final Class<T> entityClass;
+
+    public void clearCache() {
+        repository.clearCache();
+    }
+
 
     public Service(Class<T> entityClass) {
         this.entityClass = entityClass;
@@ -44,5 +49,6 @@ public class Service<T extends AbstractEntity> {
     public Long count() {
         return repository.count();
     }
+    
 
 }

@@ -59,6 +59,7 @@ public class Repository<T extends AbstractEntity> {
     public T create(T entity) {
         return executeInsideTransaction(em -> {
             em.persist(entity);
+            em.flush(); // Força o flush imediato
             return entity;
         });
     }
@@ -78,6 +79,9 @@ public class Repository<T extends AbstractEntity> {
 
     public List<T> findByMap(Map<String, Object> params) {
         try (EntityManager em = emf.createEntityManager()) {
+            // Forçar uma nova transação para evitar problemas de cache
+            em.getTransaction().begin();
+            
             StringBuilder jpql = new StringBuilder("SELECT t FROM " + entityClass.getSimpleName() + " t WHERE 1=1");
 
             params.forEach((k, v) -> jpql.append(" AND t.").append(k).append(" = :").append(k));
@@ -85,7 +89,14 @@ public class Repository<T extends AbstractEntity> {
             TypedQuery<T> query = em.createQuery(jpql.toString(), entityClass);
             params.forEach(query::setParameter);
 
-            return query.getResultList();
+            // Desabilitar cache para esta query
+            query.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            query.setHint("javax.persistence.cache.retrieveMode", "BYPASS");
+            
+            List<T> result = query.getResultList();
+            em.getTransaction().commit();
+            
+            return result;
         }
     }
 
@@ -110,6 +121,15 @@ public class Repository<T extends AbstractEntity> {
         }
     }
 
+    public void clearCache() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getEntityManagerFactory().getCache().evictAll();
+            if (em.isOpen()) {
+                em.clear();
+            }
+        }
+    }
+
     private <R> R executeInsideTransaction(EntityOperation<T, R> operation) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -117,9 +137,13 @@ public class Repository<T extends AbstractEntity> {
             tx.begin();
             R result = operation.apply(em);
             tx.commit();
+            System.out.println("Transação commitada com sucesso");
             return result;
         } catch (RuntimeException e) {
-            if (tx.isActive()) tx.rollback();
+            if (tx.isActive()) {
+                tx.rollback();
+                System.out.println("Transação revertida devido a erro: " + e.getMessage());
+            }
             throw e;
         } finally {
             em.close();
