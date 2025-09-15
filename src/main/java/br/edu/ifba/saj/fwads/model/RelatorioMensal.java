@@ -2,6 +2,7 @@ package br.edu.ifba.saj.fwads.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -18,6 +19,9 @@ public class RelatorioMensal {
     private BigDecimal percentualGastosFixos = BigDecimal.ZERO;
     private BigDecimal percentualGastosNormais = BigDecimal.ZERO;
     private BigDecimal percentualReceitas = BigDecimal.ZERO;
+    private BigDecimal totalReceitasAcumulado = BigDecimal.ZERO;
+    private BigDecimal totalGastosAcumulado = BigDecimal.ZERO;
+    private BigDecimal saldoAtual = BigDecimal.ZERO;
 
     public RelatorioMensal(UUID usuarioId, int mes, int ano) {
         this.usuarioId = usuarioId;
@@ -25,17 +29,36 @@ public class RelatorioMensal {
         this.ano = ano;
     }
 
+    public void calcularSaldoAteHoje(List<Gasto> todosGastos, List<Receita> todasReceitas) {
+        this.totalReceitasAcumulado = todasReceitas.stream()
+                .filter(r -> !r.getData().isAfter(LocalDate.now()))
+                .map(Receita::getValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        this.totalGastosAcumulado = todosGastos.stream()
+                .filter(g -> !g.getData().isAfter(LocalDate.now()))
+                .map(Gasto::getValorGasto)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        this.saldoAtual = this.totalReceitasAcumulado.subtract(this.totalGastosAcumulado);
+    }
+    
+
+    public BigDecimal getTotalReceitasAcumulado() { return totalReceitasAcumulado; }
+    public BigDecimal getTotalGastosAcumulado() { return totalGastosAcumulado; }
+    public BigDecimal getSaldoAtual() { return saldoAtual; }
+
     public void calcularRelatorio(List<Gasto> gastos, List<Receita> receitas) {
         List<Gasto> gastosDoMes = gastos.stream()
                 .filter(g -> g.getUsuarioId().equals(usuarioId) &&
-                             g.getData().getMonthValue() == mes &&
-                             g.getData().getYear() == ano)
+                               g.getData().getMonthValue() == mes &&
+                               g.getData().getYear() == ano)
                 .collect(Collectors.toList());
 
         List<Receita> receitasDoMes = receitas.stream()
                 .filter(r -> r.getUsuarioId().equals(usuarioId) &&
-                             r.getData().getMonthValue() == mes &&
-                             r.getData().getYear() == ano)
+                               r.getData().getMonthValue() == mes &&
+                               r.getData().getYear() == ano)
                 .collect(Collectors.toList());
 
         totalGastosFixos = gastosDoMes.stream()
@@ -66,7 +89,7 @@ public class RelatorioMensal {
         }
     }
 
-    // Getters
+    // Getters 
     public UUID getUsuarioId() { return usuarioId; }
     public int getMes() { return mes; }
     public int getAno() { return ano; }
@@ -77,14 +100,4 @@ public class RelatorioMensal {
     public BigDecimal getPercentualGastosFixos() { return percentualGastosFixos; }
     public BigDecimal getPercentualGastosNormais() { return percentualGastosNormais; }
     public BigDecimal getPercentualReceitas() { return percentualReceitas; }
-
-    @Override
-    public String toString() {
-        return "RelatorioMensal [usuarioId=" + usuarioId + ", mes=" + mes + ", ano=" + ano +
-                ", totalReceitas=" + totalReceitas + ", totalGastosFixos=" + totalGastosFixos +
-                ", totalGastosNormais=" + totalGastosNormais + ", totalGeral=" + totalGeral +
-                ", percentualReceitas=" + percentualReceitas + "%" +
-                ", percentualGastosFixos=" + percentualGastosFixos + "%" +
-                ", percentualGastosNormais=" + percentualGastosNormais + "%" + "]";
-    }
 }

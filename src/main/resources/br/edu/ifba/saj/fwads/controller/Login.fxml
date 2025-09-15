@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="506.0" prefWidth="786.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifba.saj.fwads.controller.LoginController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="506.0" prefWidth="786.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifba.saj.fwads.controller.LoginController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -23,16 +23,16 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: green;">
+      <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #A2A3A2;">
          <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #404040;">
                <children>
                   <ImageView fitHeight="336.0" fitWidth="337.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@assets/LogoV.png" />
+                        <Image url="@assets/gestão.png" />
                      </image>
                   </ImageView>
-                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Bem vindo ao Sistema" textAlignment="CENTER" textFill="WHITE">
+                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Gestão Financeira" textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font name="Carlito Bold Italic" size="26.0" />
                      </font>
@@ -41,7 +41,7 @@
             </VBox>
          </children>
       </StackPane>
-      <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1">
+      <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #A2A3A2;" GridPane.columnIndex="1">
          <children>
             <AnchorPane maxHeight="420.0" maxWidth="325.0" prefHeight="420.0" prefWidth="325.0">
                <children>
@@ -52,12 +52,12 @@
                   </Label>
                   <TextField fx:id="txUsuario" layoutX="39.0" layoutY="117.0" prefHeight="35.0" prefWidth="245.0" promptText="usuário" stylesheets="@assets/style.css" />
                   <PasswordField fx:id="txSenha" layoutX="39.0" layoutY="174.0" prefHeight="35.0" prefWidth="245.0" promptText="senha" stylesheets="@assets/style.css" />
-                  <Button cancelButton="true" layoutX="164.0" layoutY="232.0" mnemonicParsing="false" onAction="#limparCampos" prefHeight="35.0" prefWidth="120.0" styleClass="btn-cancelar" stylesheets="@assets/style.css" text="Cancelar" textFill="WHITE">
+                  <Button cancelButton="true" layoutX="164.0" layoutY="232.0" mnemonicParsing="false" onAction="#limparCampos" prefHeight="35.0" prefWidth="120.0" style="-fx-background-color: rgba(0,0,0,0.8);" styleClass="btn-cancelar" stylesheets="@assets/style.css" text="Cancelar" textFill="WHITE">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Button>
-                  <Button defaultButton="true" layoutX="39.0" layoutY="232.0" mnemonicParsing="false" onAction="#entrar" prefHeight="35.0" prefWidth="120.0" styleClass="btn-login" stylesheets="@assets/style.css" text="Entrar" textFill="WHITE">
+                  <Button defaultButton="true" layoutX="39.0" layoutY="232.0" mnemonicParsing="false" onAction="#entrar" prefHeight="35.0" prefWidth="120.0" style="-fx-background-color: #404040;" styleClass="btn-login" stylesheets="@assets/style.css" text="Entrar" textFill="WHITE">
                      <font>
                         <Font size="16.0" />
                      </font>

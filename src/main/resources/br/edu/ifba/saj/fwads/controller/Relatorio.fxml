@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifba.saj.fwads.controller.RelatorioController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    
+    <Label text="Relatórios" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    
+    <HBox spacing="10">
+        <ComboBox fx:id="cbTipo" promptText="Tipo" prefWidth="120"/>
+        <ComboBox fx:id="cbPeriodo" promptText="Período" prefWidth="100"/>
+        <ComboBox fx:id="cbAno" promptText="Ano" prefWidth="80"/>
+        <ComboBox fx:id="cbMes" promptText="Mês" prefWidth="100"/>
+        <Button text="Gerar Relatório" onAction="#gerarRelatorio"/>
+    </HBox>
+    
+    <TableView fx:id="tblRelatorio" prefHeight="300">
+        <columns>
+            <TableColumn fx:id="colCategoria" text="Categoria" prefWidth="200"/>
+            <TableColumn fx:id="colValor" text="Valor" prefWidth="150"/>
+        </columns>
+    </TableView>
+    
+    <Label fx:id="lblTotal" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+</VBox>

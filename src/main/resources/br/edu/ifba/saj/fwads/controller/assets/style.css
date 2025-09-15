@@ -1,5 +1,5 @@
 .top {
-    -fx-background-color: green;
+    -fx-background-color: #A2A3A2;
 }
 
 .main {
@@ -41,7 +41,7 @@
 }
 
 .btn-login:pressed {
-    -fx-background-color: darkgreen;
+    -fx-background-color: #404040;
 }
 
 .btn-menu:selected {
@@ -94,4 +94,43 @@
 
 .erro-class {
     -fx-background-color:  red;
+}
+
+
+.bg_dashbiard{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #7C7D7C, #E5E5E5);
+}
+.menu_app_bar{
+    -fx-background-color: transparent;
+}
+.menu_app_bar .menu:hover,
+.menu_app_bar .menu:showing
+{
+    -fx-background-color: #A2A3A2;
+    -fx-background-radius: 10;
+}
+.menu_app_bar .menu .menu-item:hover{
+    -fx-background-color: #A2A3A2;
+}
+.dashboard_app_bar{
+    -fx-effect: dropShadow(gaussian, rgba(0,0,0, 0.3), 20, 0, 0, 10);
+}
+.container_style{
+    -fx-background-color: #7C7D7C;
+    -fx-background-radius: 15;
+}
+.dashboard_menu_item_first{
+    -fx-background-color: #404040;
+    -fx-background-radius: 15 15 0 0;
+}
+.dashboard_menu_item:hover{
+    -fx-background-color: rgba(0, 0, 0, 0.205);
+}
+.dashboard_menu_item_border{
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #404040;
+}
+.dashboard_menu_item_last{
+    -fx-background-color: rgba(179, 189, 200, 0.4);
+    -fx-background-radius: 0 0 15 15;
 }

@@ -1,15 +1,20 @@
 package br.edu.ifba.saj.fwads.repository;
 
 import br.edu.ifba.saj.fwads.model.AbstractEntity;
-import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Repository<T extends AbstractEntity> {
 
@@ -18,7 +23,7 @@ public class Repository<T extends AbstractEntity> {
     static {
         try {
             emf = Persistence.createEntityManagerFactory("jpa");
-            runImport(); 
+            runImport();
         } catch (Throwable ex) {
             throw new ExceptionInInitializerError("Erro ao inicializar EntityManagerFactory: " + ex);
         }
@@ -31,26 +36,20 @@ public class Repository<T extends AbstractEntity> {
     }
 
     private static void runImport() {
-        Path importFile = Paths.get("src/main/resources/import.sql");
-
-        if (!Files.exists(importFile)) {
-            return; 
-        }
-
-        try (EntityManager em = emf.createEntityManager()) {
-            em.getTransaction().begin();
-
-            String sql = Files.readString(importFile, StandardCharsets.UTF_8);
-            for (String command : sql.split(";")) {
-                String trimmed = command.trim();
-                if (!trimmed.isEmpty()) {
-                    em.createNativeQuery(trimmed).executeUpdate();
+        try (InputStream is = Repository.class.getResourceAsStream("/import.sql")) {
+            if (is == null) return;
+            String sql = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
+                    .lines().collect(Collectors.joining("\n"));
+            try (EntityManager em = emf.createEntityManager()) {
+                em.getTransaction().begin();
+                for (String command : sql.split(";")) {
+                    String trimmed = command.trim();
+                    if (!trimmed.isEmpty()) {
+                        em.createNativeQuery(trimmed).executeUpdate();
+                    }
                 }
+                em.getTransaction().commit();
             }
-
-            em.getTransaction().commit();
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao ler import.sql", e);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao executar import.sql", e);
         }
@@ -59,7 +58,7 @@ public class Repository<T extends AbstractEntity> {
     public T create(T entity) {
         return executeInsideTransaction(em -> {
             em.persist(entity);
-            em.flush(); // Força o flush imediato
+            em.flush();
             return entity;
         });
     }
@@ -79,7 +78,6 @@ public class Repository<T extends AbstractEntity> {
 
     public List<T> findByMap(Map<String, Object> params) {
         try (EntityManager em = emf.createEntityManager()) {
-            // Forçar uma nova transação para evitar problemas de cache
             em.getTransaction().begin();
             
             StringBuilder jpql = new StringBuilder("SELECT t FROM " + entityClass.getSimpleName() + " t WHERE 1=1");
@@ -88,8 +86,6 @@ public class Repository<T extends AbstractEntity> {
 
             TypedQuery<T> query = em.createQuery(jpql.toString(), entityClass);
             params.forEach(query::setParameter);
-
-            // Desabilitar cache para esta query
             query.setHint("javax.persistence.cache.storeMode", "REFRESH");
             query.setHint("javax.persistence.cache.retrieveMode", "BYPASS");
             
@@ -114,19 +110,15 @@ public class Repository<T extends AbstractEntity> {
 
     public Long count() {
         try (EntityManager em = emf.createEntityManager()) {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-            cq.select(cb.count(cq.from(entityClass)));
-            return em.createQuery(cq).getSingleResult();
+            String jpql = "SELECT COUNT(t) FROM " + entityClass.getSimpleName() + " t";
+            return em.createQuery(jpql, Long.class).getSingleResult();
         }
     }
 
     public void clearCache() {
-        try (EntityManager em = emf.createEntityManager()) {
-            em.getEntityManagerFactory().getCache().evictAll();
-            if (em.isOpen()) {
-                em.clear();
-            }
+        try {
+            emf.getCache().evictAll();
+        } catch (Exception e) {
         }
     }
 
@@ -137,13 +129,9 @@ public class Repository<T extends AbstractEntity> {
             tx.begin();
             R result = operation.apply(em);
             tx.commit();
-            System.out.println("Transação commitada com sucesso");
             return result;
         } catch (RuntimeException e) {
-            if (tx.isActive()) {
-                tx.rollback();
-                System.out.println("Transação revertida devido a erro: " + e.getMessage());
-            }
+            if (tx.isActive()) tx.rollback();
             throw e;
         } finally {
             em.close();

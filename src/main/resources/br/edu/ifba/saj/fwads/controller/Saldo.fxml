@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifba.saj.fwads.controller.SaldoController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <spacing>20</spacing>
+    
+    <VBox spacing="10">
+        <Label text="Saldo Atual" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        <Label fx:id="lblSaldoAtual" text="R$ 0,00" style="-fx-font-size: 24px; -fx-text-fill: #2ecc71;"/>
+    </VBox>
+
+    <VBox spacing="10">
+        <Label text="Previsão de Gastos Fixos" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        
+        <HBox spacing="10">
+            <ComboBox fx:id="cbMesPrevisao" promptText="Selecione o mês" prefWidth="150"/>
+            <ComboBox fx:id="cbAnoPrevisao" promptText="Selecione o ano" prefWidth="120"/>
+        </HBox>
+        
+        <Label text="Gasto Previsto:" style="-fx-font-size: 14px;"/>
+        <Label fx:id="lblGastoPrevisto" text="R$ 0,00" style="-fx-font-size: 18px; -fx-text-fill: #e74c3c;"/>
+    </VBox>
+</VBox>

@@ -12,27 +12,23 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 public class LoginController {
-    @FXML
-    private PasswordField txSenha;
-
-    @FXML
-    private TextField txUsuario;
+    @FXML private PasswordField txSenha;
+    @FXML private TextField txUsuario;
 
     private UsuarioService usuarioService = new UsuarioService();
 
     @FXML
     void entrar(ActionEvent event) {
-        
         try {
             Usuario usuario = usuarioService.validaLogin(txUsuario.getText(), txSenha.getText());
             App.setRoot("controller/Master.fxml");
-            MasterController controller = (MasterController) App.getController();
+            var controller = (br.edu.ifba.saj.fwads.controller.MasterController) App.getController();
             controller.setUsuarioLogado(usuario);
         } catch (LoginInvalidoException e) {
             new Alert(AlertType.ERROR, e.getMessage()).showAndWait();
         } catch (Exception e){
             e.printStackTrace();
-            new Alert(AlertType.ERROR, "Erro inesperado, favor entra em contato com a equipe de desenvolvimento").showAndWait();
+            new Alert(AlertType.ERROR, "Erro inesperado, favor entre em contato com a equipe de desenvolvimento").showAndWait();
         }
     }
 
@@ -42,4 +38,7 @@ public class LoginController {
         txSenha.setText("");
     }
 
+    @FXML
+    private void initialize() {
+    }
 }

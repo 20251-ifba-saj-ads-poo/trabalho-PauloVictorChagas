@@ -19,20 +19,21 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.application.Platform;
-import java.util.Map;
+
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class ListReceitaController implements EventBus.EventListener {
 
-    @FXML
-    private TableColumn<Receita, String> columnDataReceita;
-    @FXML
-    private TableColumn<Receita, String> columnDescricaoReceita;
-    @FXML
-    private TableColumn<Receita, Double> columnValorReceita;
-    @FXML
-    private TableView<Receita> tblReceita;
+    @FXML private TableColumn<Receita, LocalDate> columnDataReceita;
+    @FXML private TableColumn<Receita, String> columnCategoriaReceita;
+    @FXML private TableColumn<Receita, BigDecimal> columnValorReceita;
+    @FXML private TableView<Receita> tblReceita;
 
     private Service<Receita> serviceReceita = new Service<>(Receita.class);
     private Usuario usuarioLogado;
@@ -41,83 +42,55 @@ public class ListReceitaController implements EventBus.EventListener {
     @FXML
     public void initialize() {
         columnDataReceita.setCellValueFactory(new PropertyValueFactory<>("data"));
-        columnDescricaoReceita.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        columnCategoriaReceita.setCellValueFactory(new PropertyValueFactory<>("nome"));
         columnValorReceita.setCellValueFactory(new PropertyValueFactory<>("valor"));
-        
-        // Configurar a TableView para usar a ObservableList
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        columnDataReceita.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : dtf.format(item));
+            }
+        });
+
+        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        columnValorReceita.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
+            @Override protected void updateItem(BigDecimal item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : nf.format(item));
+            }
+        });
+
         tblReceita.setItems(receitasObservableList);
-        
-        // Registrar este controlador como listener de eventos
         EventBus.getInstance().subscribe(this);
-        
-        System.out.println("ListReceitaController inicializado");
     }
 
     @Override
     public void onEvent(EventBus.Event event) {
         if ("RECEITA_CADASTRADA".equals(event.getType())) {
-            System.out.println("Evento RECEITA_CADASTRADA recebido");
-            Receita novaReceita = (Receita) event.getData();
-            
-            // Verificar se a receita pertence ao usuário logado
-            if (usuarioLogado != null && novaReceita.getUsuarioId().equals(usuarioLogado.getId())) {
-                Platform.runLater(() -> {
-                    // Adicionar à lista e forçar atualização da tabela
-                    receitasObservableList.add(novaReceita);
-                    System.out.println("Receita adicionada à lista: " + novaReceita.getNome());
-                    System.out.println("Total de receitas na lista: " + receitasObservableList.size());
-                    
-                    // Forçar refresh da tabela
-                    tblReceita.refresh();
-                });
-            } else {
-                System.out.println("Receita não pertence ao usuário logado ou usuário é nulo");
-            }
+            Platform.runLater(() -> {
+                refreshList();
+            });
         }
     }
 
     public void loadReceitaList(Usuario usuario) {
-        System.out.println("Carregando lista de receitas para usuário: " + usuario);
         this.usuarioLogado = usuario;
         refreshList();
     }
-    
+
     public void refreshList() {
         if (this.usuarioLogado != null) {
-            System.out.println("Atualizando lista para usuário ID: " + usuarioLogado.getId());
+            serviceReceita.clearCache();
+            List<Receita> todasReceitas = serviceReceita.findAll();
+            List<Receita> receitasDoUsuario = todasReceitas.stream()
+                    .filter(r -> r.getUsuarioId().equals(usuarioLogado.getId()))
+                    .collect(Collectors.toList());
             
-            try {
-                // Forçar limpeza do cache
-                serviceReceita.clearCache();
-                
-                // Usar findAll e filtrar manualmente para evitar problemas de cache
-                List<Receita> todasReceitas = serviceReceita.findAll();
-                List<Receita> receitasDoUsuario = todasReceitas.stream()
-                        .filter(r -> r.getUsuarioId().equals(usuarioLogado.getId()))
-                        .toList();
-                
-                System.out.println("Receitas encontradas no banco (após filtro): " + receitasDoUsuario.size());
-                
-                Platform.runLater(() -> {
-                    receitasObservableList.clear();
-                    receitasObservableList.addAll(receitasDoUsuario);
-                    
-                    System.out.println(">>> DIAGNÓSTICO: Itens na tabela de RECEITAS: " + receitasObservableList.size());
-                    if (receitasObservableList.size() > 0) {
-                        for (Receita receita : receitasObservableList) {
-                            System.out.println(">>> Receita na lista: " + receita.getNome() + " - UserID: " + receita.getUsuarioId());
-                        }
-                    }
-                    
-                    // Forçar refresh da tabela
-                    tblReceita.refresh();
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Erro ao carregar receitas: " + e.getMessage());
-            }
-        } else {
-            System.out.println("Usuário logado é nulo! Não é possível carregar receitas.");
+            Platform.runLater(() -> {
+                receitasObservableList.setAll(receitasDoUsuario);
+                tblReceita.refresh();
+            });
         }
     }
 
@@ -136,8 +109,6 @@ public class ListReceitaController implements EventBus.EventListener {
             controller.setUsuarioLogado(this.usuarioLogado);
 
             stage.showAndWait();
-            
-            // Forçar atualização após fechar a janela de cadastro
             refreshList();
 
         } catch (Exception e) {

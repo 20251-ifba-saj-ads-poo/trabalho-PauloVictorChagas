@@ -26,7 +26,7 @@ public abstract class AbstractEntity {
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof AbstractEntity)) {
-            return false; // null or other class
+            return false; 
         }
         AbstractEntity other = (AbstractEntity) obj;
 

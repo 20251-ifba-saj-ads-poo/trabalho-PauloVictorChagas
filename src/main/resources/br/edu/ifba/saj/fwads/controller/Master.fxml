@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -12,13 +13,13 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="masterPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="main" stylesheets="@assets/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifba.saj.fwads.controller.MasterController">
+<BorderPane fx:id="masterPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="bg_dashbiard" stylesheets="@assets/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.edu.ifba.saj.fwads.controller.MasterController">
    <top>
-      <AnchorPane prefHeight="100.0" styleClass="top" stylesheets="@assets/style.css" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="100.0" style="-fx-background-color: #7C7D7C;" stylesheets="@assets/style.css" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fitHeight="100.0" fitWidth="292.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="100.0" fitWidth="139.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@assets/LogoH.png" />
+                  <Image url="@assets/gestão.png" />
                </image>
             </ImageView>
             <Label fx:id="userEmail" layoutX="758.0" layoutY="32.0" onMouseClicked="#logOff" text="email@email" textFill="#FFFFFF" AnchorPane.rightAnchor="15.0">
@@ -29,12 +30,17 @@
                   <Circle fx:id="userPicture" fill="DODGERBLUE" radius="25.0" stroke="BLACK" strokeType="INSIDE" />
                </graphic>
             </Label>
+            <Label layoutX="100.0" layoutY="31.0" text="Gestão Financeira">
+               <font>
+                  <Font name="System Italic" size="36.0" />
+               </font>
+            </Label>
          </children></AnchorPane>
    </top>
    <left>
-      <VBox fx:id="menu" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="500.0" prefWidth="245.0" styleClass="left" stylesheets="@assets/style.css" BorderPane.alignment="TOP_LEFT">
+      <VBox fx:id="menu" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="500.0" prefWidth="245.0" styleClass="dashboard_menu_item_border" stylesheets="@assets/style.css" BorderPane.alignment="TOP_LEFT">
          <children>
-            <Button fx:id="menuItemHome" alignment="TOP_LEFT" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHome" prefHeight="35.0" styleClass="btn-menu-selected" stylesheets="@assets/style.css" text="Home" textFill="WHITE">
+            <Button fx:id="menuItemHome" alignment="TOP_LEFT" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showHome" prefHeight="35.0" styleClass="dashboard_menu_item_first" stylesheets="@assets/style.css" text="Home" textFill="WHITE">
                <padding>
                   <Insets bottom="5.0" left="10.0" />
                </padding>
@@ -49,7 +55,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="menuItemCadGasto" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCadGasto" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Cadastro Gasto" textFill="WHITE">
+            <Button fx:id="menuItemCadGasto" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCadGasto" prefHeight="35.0" stylesheets="@assets/style.css" text="Cadastro Gasto">
                <padding>
                   <Insets bottom="5.0" left="10.0" />
                </padding>
@@ -63,8 +69,12 @@
                      </image>
                   </ImageView>
                </graphic>
+               <styleClass>
+                  <String fx:value="dashboard_menu_item_border" />
+                  <String fx:value="dashboard_menu_item" />
+               </styleClass>
             </Button>
-            <Button fx:id="menuItemCadReceita" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCadReceita" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Cadastro Receita" textFill="WHITE">
+            <Button fx:id="menuItemCadReceita" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCadReceita" prefHeight="35.0" stylesheets="@assets/style.css" text="Cadastro Receita">
                <padding>
                   <Insets bottom="5.0" left="10.0" />
                </padding>
@@ -78,8 +88,12 @@
                      </image>
                   </ImageView>
                </graphic>
+               <styleClass>
+                  <String fx:value="dashboard_menu_item_border" />
+                  <String fx:value="dashboard_menu_item" />
+               </styleClass>
             </Button>
-            <Button fx:id="menuItemListGasto" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showListGasto" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Listar Gastos" textFill="WHITE">
+            <Button fx:id="menuItemListGasto" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showListGasto" prefHeight="35.0" stylesheets="@assets/style.css" text="Listar Gastos">
                <padding>
                   <Insets bottom="5.0" left="10.0" />
                </padding>
@@ -93,8 +107,12 @@
                      </image>
                   </ImageView>
                </graphic>
+               <styleClass>
+                  <String fx:value="dashboard_menu_item_border" />
+                  <String fx:value="dashboard_menu_item" />
+               </styleClass>
             </Button>
-            <Button fx:id="menuItemListReceita" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showListReceita" prefHeight="35.0" styleClass="btn-menu" stylesheets="@assets/style.css" text="Listar Receitas" textFill="WHITE">
+            <Button fx:id="menuItemListReceita" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showListReceita" prefHeight="35.0" stylesheets="@assets/style.css" text="Listar Receitas">
                <padding>
                   <Insets bottom="5.0" left="10.0" />
                </padding>
@@ -108,6 +126,48 @@
                      </image>
                   </ImageView>
                </graphic>
+               <styleClass>
+                  <String fx:value="dashboard_menu_item_border" />
+                  <String fx:value="dashboard_menu_item" />
+               </styleClass>
+            </Button>
+            <Button fx:id="menuItemSaldo" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showSaldo" prefHeight="35.0" stylesheets="@assets/style.css" text="Saldo e Previsão">
+               <padding>
+                  <Insets bottom="5.0" left="10.0" />
+               </padding>
+               <font>
+                  <Font size="25.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="35.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/saldo.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <styleClass>
+                  <String fx:value="dashboard_menu_item_border" />
+                  <String fx:value="dashboard_menu_item" />
+               </styleClass>
+            </Button>
+            <Button fx:id="menuItemRelatorio" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showRelatorios" prefHeight="35.0" stylesheets="@assets/style.css" text="Relatórios" textFill="WHITE">
+               <padding>
+                  <Insets bottom="5.0" left="10.0" />
+               </padding>
+               <font>
+                  <Font size="25.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="35.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/Relatorio.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <styleClass>
+                  <String fx:value="dashboard_menu_item_last" />
+                  <String fx:value="dashboard_app_bar" />
+               </styleClass>
             </Button>
          </children></VBox>
    </left>

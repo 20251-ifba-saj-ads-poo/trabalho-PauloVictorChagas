@@ -1,51 +1,53 @@
 package br.edu.ifba.saj.fwads.controller;
 
+import br.edu.ifba.saj.fwads.bus.EventBus;
 import br.edu.ifba.saj.fwads.model.Gasto;
 import br.edu.ifba.saj.fwads.model.Usuario;
 import br.edu.ifba.saj.fwads.service.Service;
-import br.edu.ifba.saj.fwads.bus.EventBus;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 public class CadGastoController {
 
-    @FXML
-    private DatePicker cadGastoData;
-    @FXML
-    private TextField cadGastoDescricao;
-    @FXML
-    private TextField cadGastoValor;
-    @FXML
-    private ChoiceBox<String> choiceBoxTipo;
+    @FXML private DatePicker cadGastoData;
+    @FXML private TextField cadGastoValor;
+    @FXML private ChoiceBox<String> choiceBoxTipo;
+    @FXML private ChoiceBox<String> choiceBoxCategoriaGasto;
 
     private Service<Gasto> serviceGasto = new Service<>(Gasto.class);
     private Usuario usuarioLogado;
 
+    private final List<String> categoriasGasto = Arrays.asList(
+            "Alimentação", "Transporte", "Moradia", "Saúde", "Educação", "Lazer", "Outros"
+    );
+
     public void setUsuarioLogado(Usuario usuarioLogado) {
         this.usuarioLogado = usuarioLogado;
-        System.out.println("Usuário logado definido no CadGastoController: " + usuarioLogado);
     }
 
     @FXML
     private void initialize() {
         choiceBoxTipo.getItems().addAll("Fixo", "Normal");
-        System.out.println("CadGastoController inicializado");
+        choiceBoxCategoriaGasto.getItems().addAll(categoriasGasto);
     }
 
     @FXML
     void salvarGasto(ActionEvent event) {
         try {
-            String descricao = cadGastoDescricao.getText();
             String valorStr = cadGastoValor.getText();
             LocalDate data = cadGastoData.getValue();
             String tipo = choiceBoxTipo.getValue();
+            String categoria = choiceBoxCategoriaGasto.getValue();
 
-            if (descricao == null || descricao.isBlank() || valorStr == null || valorStr.isBlank() || data == null || tipo == null) {
+            if (categoria == null || valorStr == null || valorStr.isBlank() || data == null || tipo == null) {
                 new Alert(AlertType.WARNING, "Preencha todos os campos antes de salvar.").showAndWait();
                 return;
             }
@@ -54,48 +56,45 @@ public class CadGastoController {
                 return;
             }
 
-            BigDecimal valor = new BigDecimal(valorStr);
+            String normalized = valorStr.trim().replace(",", ".");
+            BigDecimal valor = new BigDecimal(normalized);
             boolean gastoFixo = tipo.equalsIgnoreCase("Fixo");
 
             Gasto novoGasto = new Gasto();
-            novoGasto.setNomeGasto(descricao);
+            novoGasto.setNomeGasto(categoria);
             novoGasto.setValorGasto(valor);
             novoGasto.setData(data);
             novoGasto.setGastoFixo(gastoFixo);
             novoGasto.setUsuarioId(usuarioLogado.getId());
-            
-            System.out.println("Salvando gasto: " + descricao + " para usuário: " + usuarioLogado.getId());
-            
-            // Salvar no banco
             serviceGasto.create(novoGasto);
-            
-            // Limpar o cache para garantir que a próxima consulta traga dados atualizados
             serviceGasto.clearCache();
-            
-            // Publicar evento de novo gasto cadastrado
+
             EventBus.getInstance().publish(new EventBus.Event("GASTO_CADASTRADO", novoGasto));
 
-            new Alert(AlertType.INFORMATION, "Gasto '" + descricao + "' cadastrado com sucesso!").showAndWait();
-            
-            // Fechar a janela se for um pop-up
-            Stage stage = (Stage) cadGastoDescricao.getScene().getWindow();
-            if (stage.getOwner() != null) {
-                stage.close();
+            new Alert(AlertType.INFORMATION, "Gasto na categoria '" + categoria + "' cadastrado com sucesso!").showAndWait();
+
+            limparTela(null);
+
+            if (cadGastoValor.getScene() != null) {
+                Stage stage = (Stage) cadGastoValor.getScene().getWindow();
+                if (stage != null && stage.getOwner() != null) {
+                    stage.close();
+                }
             }
 
         } catch (NumberFormatException e) {
             new Alert(AlertType.ERROR, "Valor inválido! Digite um número válido.").showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
-            new Alert(AlertType.ERROR, "Erro ao salvar gasto: " + e.getMessage()).showAndWait();
+            new Alert(AlertType.ERROR, "Erro ao salvar gasto.").showAndWait();
         }
     }
 
     @FXML
     void limparTela(ActionEvent event) {
-        cadGastoDescricao.setText("");
         cadGastoValor.setText("");
         cadGastoData.setValue(null);
         choiceBoxTipo.setValue(null);
+        choiceBoxCategoriaGasto.setValue(null);
     }
 }

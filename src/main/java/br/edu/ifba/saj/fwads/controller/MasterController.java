@@ -11,7 +11,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -24,37 +23,28 @@ import java.util.Map;
 
 public class MasterController implements EventBus.EventListener {
 
-    @FXML
-    private BorderPane masterPane;
-    @FXML
-    private VBox menu;
-    @FXML
-    private Button menuItemCadGasto;
-    @FXML
-    private Button menuItemCadReceita;
-    @FXML
-    private Button menuItemHome;
-    @FXML
-    private Button menuItemListGasto;
-    @FXML
-    private Button menuItemListReceita;
-    @FXML
-    private Label userEmail;
-    @FXML
-    private Circle userPicture;
+    @FXML private BorderPane masterPane;
+    @FXML private VBox menu;
+    @FXML private Button menuItemCadGasto;
+    @FXML private Button menuItemCadReceita;
+    @FXML private Button menuItemHome;
+    @FXML private Button menuItemListGasto;
+    @FXML private Button menuItemListReceita;
+    @FXML private Button menuItemSaldo;
+    @FXML private Button menuItemRelatorio;
+    @FXML private Label userEmail;
+    @FXML private Circle userPicture;
 
     private Usuario usuarioLogado;
     private Map<String, Pane> viewCache = new HashMap<>();
 
     @FXML
     public void initialize() {
-        // Registrar este controlador como listener de eventos
         EventBus.getInstance().subscribe(this);
     }
 
     @Override
     public void onEvent(EventBus.Event event) {
-        // Limpar cache quando houver mudanças nos dados
         if ("GASTO_CADASTRADO".equals(event.getType()) || "RECEITA_CADASTRADA".equals(event.getType())) {
             viewCache.clear();
         }
@@ -67,7 +57,7 @@ public class MasterController implements EventBus.EventListener {
 
     @FXML
     void logOff(MouseEvent event) {
-        new Alert(AlertType.CONFIRMATION, "Deseja realmente sair?", ButtonType.YES, ButtonType.NO)
+        new Alert(Alert.AlertType.CONFIRMATION, "Deseja realmente sair?", ButtonType.YES, ButtonType.NO)
             .showAndWait()
             .filter(response -> response == ButtonType.YES)
             .ifPresent(response -> {
@@ -99,7 +89,6 @@ public class MasterController implements EventBus.EventListener {
         limparBotoes(event.getSource());
         String fxmlPath = "/br/edu/ifba/saj/fwads/controller/ListGasto.fxml";
         Pane view = getView(fxmlPath);
-
         if (view != null) {
             ListGastoController controller = (ListGastoController) view.getProperties().get("controller");
             controller.loadGastoList(this.usuarioLogado);
@@ -123,14 +112,35 @@ public class MasterController implements EventBus.EventListener {
         limparBotoes(event.getSource());
         String fxmlPath = "/br/edu/ifba/saj/fwads/controller/ListReceita.fxml";
         Pane view = getView(fxmlPath);
-
         if (view != null) {
             ListReceitaController controller = (ListReceitaController) view.getProperties().get("controller");
             controller.loadReceitaList(this.usuarioLogado);
             masterPane.setCenter(view);
         }
     }
-    
+
+    @FXML
+    void showSaldo(ActionEvent event) {
+        limparBotoes(event.getSource());
+        Pane view = getView("/br/edu/ifba/saj/fwads/controller/Saldo.fxml");
+        if (view != null) {
+            SaldoController controller = (SaldoController) view.getProperties().get("controller");
+            controller.setUsuarioLogado(this.usuarioLogado);
+            masterPane.setCenter(view);
+        }
+    }
+
+    @FXML
+    void showRelatorios(ActionEvent event) {
+        limparBotoes(event.getSource());
+        Pane view = getView("/br/edu/ifba/saj/fwads/controller/Relatorio.fxml");
+        if (view != null) {
+            RelatorioController controller = (RelatorioController) view.getProperties().get("controller");
+            controller.setUsuarioLogado(this.usuarioLogado);
+            masterPane.setCenter(view);
+        }
+    }
+
     private Pane getView(String fxmlPath) {
         if (viewCache.containsKey(fxmlPath)) {
             return viewCache.get(fxmlPath);

@@ -11,16 +11,16 @@
    <center>
       <TableView fx:id="tblReceita" prefHeight="347.0" prefWidth="489.0">
         <columns>
-          <TableColumn fx:id="columnDescricaoReceita" editable="false" minWidth="-1.0" prefWidth="201.0" text="Decrição" />
+          <TableColumn fx:id="columnCategoriaReceita" editable="false" minWidth="-1.0" prefWidth="201.0" text="Categoria" />
           <TableColumn fx:id="columnValorReceita" editable="false" minWidth="-1.0" prefWidth="172.0" text="Valor" />
             <TableColumn fx:id="columnDataReceita" editable="false" minWidth="-1.0" prefWidth="208.0" text="Data" />
         </columns>
       </TableView>
    </center>
    <bottom>
-      <ButtonBar prefHeight="40.0" prefWidth="200.0" styleClass="main" stylesheets="@assets/style.css" BorderPane.alignment="CENTER">
+      <ButtonBar prefHeight="40.0" prefWidth="200.0" styleClass="bg_dashbiard" stylesheets="@assets/style.css" BorderPane.alignment="CENTER">
         <buttons>
-          <Button mnemonicParsing="false" onAction="#showNovoReceita" styleClass="bottom" stylesheets="@assets/style.css" text="Novo Receita" />
+          <Button mnemonicParsing="false" onAction="#showNovoReceita" style="-fx-background-color: #404040;" stylesheets="@assets/style.css" text="Novo Receita" textFill="WHITE" />
         </buttons>
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
